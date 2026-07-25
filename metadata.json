@@ -1,0 +1,6 @@
+{
+  "name": "مدیریت دانلود پیشرفته",
+  "description": "برنامه مدیریت دانلود حرفه‌ای با پشتیبانی از یوتیوب، اینستاگرام، تلگرام، زمان‌بندی، دسته‌بندی خودکار، FFmpeg و رابط کاربری تاریک مینیمال",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
