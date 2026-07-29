@@ -1,0 +1,24 @@
+{
+  "short_name": "DLD-Pro",
+  "name": "DLD-Pro | مدیریت دانلود پیشرفته undo",
+  "description": "برنامه مدیریت دانلود حرفه‌ای با پشتیبانی از دانلود یوتیوب، زمان‌بندی، خروجی چندرسانه‌ای و پرداخت درون‌برنامه‌ای مایکت و کافه بازار",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "fa"
+}

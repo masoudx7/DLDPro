@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ir.undo.dldpro"
+    android:versionCode="100"
+    android:versionName="1.0.0">
+
+    <!-- Network & Storage Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Cafe Bazaar & Myket In-App Billing Permissions -->
+    <uses-permission android:name="com.farsitel.bazaar.permission.PAY_THROUGH_BAZAAR" />
+    <uses-permission android:name="ir.myket.billing.permission.BILLING" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="DLD-Pro"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Myket & Cafe Bazaar IAB Service Query Package Declaration (Android 11+) -->
+        <queries>
+            <package android:name="ir.myket" />
+            <intent>
+                <action android:name="ir.myket.billing.InAppBillingService.BIND" />
+            </intent>
+            <package android:name="com.farsitel.bazaar" />
+            <intent>
+                <action android:name="ir.cafebazaar.pardakht.InAppBillingService.BIND" />
+            </intent>
+        </queries>
+
+    </application>
+</manifest>
