@@ -56,7 +56,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               />
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, defaultPath: 'C:/Downloads/DLD-Pro' })}
+                onClick={() => {
+                  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+                  setFormData({ 
+                    ...formData, 
+                    defaultPath: isAndroid ? '/storage/emulated/0/Download/UndoDownloadManager' : 'C:/Users/Public/Downloads/UndoDownloadManager' 
+                  });
+                }}
                 className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 rounded-xl text-xs font-bold transition-all shrink-0"
               >
                 پیش‌فرض

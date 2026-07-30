@@ -30,6 +30,7 @@ interface DownloadListProps {
   onConvertToFFmpeg: (item: DownloadItem) => void;
   onPlayFile: (item: DownloadItem) => void;
   onOpenFolderLocation: (item: DownloadItem) => void;
+  onOpenAppChooser: (item: DownloadItem) => void;
 }
 
 export const DownloadList: React.FC<DownloadListProps> = ({
@@ -40,7 +41,8 @@ export const DownloadList: React.FC<DownloadListProps> = ({
   onDelete,
   onConvertToFFmpeg,
   onPlayFile,
-  onOpenFolderLocation
+  onOpenFolderLocation,
+  onOpenAppChooser
 }) => {
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 بایت';
@@ -216,8 +218,8 @@ export const DownloadList: React.FC<DownloadListProps> = ({
                 {isCompleted ? (
                   <>
                     <button
-                      onClick={() => onPlayFile(item)}
-                      title="اجرا / پخش فایل"
+                      onClick={() => onOpenAppChooser(item)}
+                      title="اجرا با انتخاب برنامه / پلیر"
                       className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-950/50 transition-all"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />

@@ -24,12 +24,14 @@ interface FilePlayerModalProps {
   item: DownloadItem | null;
   onClose: () => void;
   onOpenFolderLocation: (item: DownloadItem) => void;
+  onOpenAppChooser?: (item: DownloadItem) => void;
 }
 
 export const FilePlayerModal: React.FC<FilePlayerModalProps> = ({
   item,
   onClose,
-  onOpenFolderLocation
+  onOpenFolderLocation,
+  onOpenAppChooser
 }) => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -152,11 +154,18 @@ export const FilePlayerModal: React.FC<FilePlayerModalProps> = ({
           {/* Action Buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
             <button
-              onClick={handleLaunchFile}
+              onClick={() => {
+                if (onOpenAppChooser && item) {
+                  onClose();
+                  onOpenAppChooser(item);
+                } else {
+                  handleLaunchFile();
+                }
+              }}
               className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/50 transition-all"
             >
               <ExternalLink className="w-4 h-4" />
-              <span>اجرای مستقیم فایل در سیستم</span>
+              <span>اجرا با برنامه/پلیر دلخواه (Open With)</span>
             </button>
 
             <button

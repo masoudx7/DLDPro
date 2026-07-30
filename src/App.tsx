@@ -11,7 +11,9 @@ import { TapsellRewardModal } from './components/TapsellRewardModal';
 import { SpeedChart } from './components/SpeedChart';
 import { FilePlayerModal } from './components/FilePlayerModal';
 import { FileManagerModal } from './components/FileManagerModal';
+import { AppChooserModal } from './components/AppChooserModal';
 import { DownloadItem, AppSettings } from './types';
+import { CheckCircle2, FolderCheck } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('all');
@@ -22,8 +24,12 @@ export default function App() {
   const [isTapsellModalOpen, setIsTapsellModalOpen] = useState<boolean>(false);
   const [rewardPoints, setRewardPoints] = useState<number>(250);
 
-  // File Player & File Manager Modals State
+  // Initial folder created toast banner
+  const [showFolderCreatedToast, setShowFolderCreatedToast] = useState<boolean>(true);
+
+  // File Player, File Manager & App Chooser Modals State
   const [selectedFileToPlay, setSelectedFileToPlay] = useState<DownloadItem | null>(null);
+  const [selectedAppChooserItem, setSelectedAppChooserItem] = useState<DownloadItem | null>(null);
   const [isFileManagerOpen, setIsFileManagerOpen] = useState<boolean>(false);
   const [selectedFolderItem, setSelectedFolderItem] = useState<DownloadItem | null>(null);
 
@@ -31,8 +37,14 @@ export default function App() {
     setRewardPoints(prev => prev + 100);
   };
 
+  // Auto-detect system download path on initial launch
+  const isAndroidOS = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+  const defaultOSPath = isAndroidOS 
+    ? '/storage/emulated/0/Download/UndoDownloadManager' 
+    : 'C:/Users/Public/Downloads/UndoDownloadManager';
+
   const [settings, setSettings] = useState<AppSettings>({
-    defaultPath: 'C:/Users/Masoud/Downloads/AriaDownloads',
+    defaultPath: defaultOSPath,
     maxSimultaneous: 3,
     autoShutdown: false,
     soundEnabled: true,
@@ -167,6 +179,27 @@ export default function App() {
         />
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-24 md:pb-8">
+          {/* Initial Folder Created Toast Banner */}
+          {showFolderCreatedToast && (
+            <div className="max-w-5xl mx-auto mb-4 p-3 sm:p-4 bg-gradient-to-r from-blue-950/60 via-neutral-900 to-amber-950/40 border border-blue-500/30 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm animate-in fade-in duration-300" dir="rtl">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0">
+                  <FolderCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="font-bold text-white">پوشه ذخیره‌سازی محلی سیستم ایجاد و آماده شد: </span>
+                  <span className="font-mono text-amber-300 text-xs dir-ltr block sm:inline mt-0.5 sm:mt-0">{settings.defaultPath}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFolderCreatedToast(false)}
+                className="text-neutral-400 hover:text-white px-2 py-1 rounded-lg text-xs font-bold"
+              >
+                متوجه شدم
+              </button>
+            </div>
+          )}
+
           {activeTab === 'ffmpeg' ? (
             <FFmpegStudio completedDownloads={completedDownloadsList} />
           ) : activeTab === 'schedule_settings' ? (
@@ -221,11 +254,19 @@ export default function App() {
                   setSelectedFolderItem(item);
                   setIsFileManagerOpen(true);
                 }}
+                onOpenAppChooser={(item) => setSelectedAppChooserItem(item)}
               />
             </div>
           )}
         </main>
       </div>
+
+      {/* App Chooser (Open With) Modal */}
+      <AppChooserModal
+        item={selectedAppChooserItem}
+        isOpen={!!selectedAppChooserItem}
+        onClose={() => setSelectedAppChooserItem(null)}
+      />
 
       {/* File Player & Executer Modal */}
       <FilePlayerModal 
@@ -235,6 +276,7 @@ export default function App() {
           setSelectedFolderItem(item);
           setIsFileManagerOpen(true);
         }}
+        onOpenAppChooser={(item) => setSelectedAppChooserItem(item)}
       />
 
       {/* File Manager Folder Location Modal */}
