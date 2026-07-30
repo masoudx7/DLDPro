@@ -9,6 +9,8 @@ import { SettingsModal } from './components/SettingsModal';
 import { ScheduleSpeedTab } from './components/ScheduleSpeedTab';
 import { TapsellRewardModal } from './components/TapsellRewardModal';
 import { SpeedChart } from './components/SpeedChart';
+import { FilePlayerModal } from './components/FilePlayerModal';
+import { FileManagerModal } from './components/FileManagerModal';
 import { DownloadItem, AppSettings } from './types';
 
 export default function App() {
@@ -19,6 +21,11 @@ export default function App() {
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
   const [isTapsellModalOpen, setIsTapsellModalOpen] = useState<boolean>(false);
   const [rewardPoints, setRewardPoints] = useState<number>(250);
+
+  // File Player & File Manager Modals State
+  const [selectedFileToPlay, setSelectedFileToPlay] = useState<DownloadItem | null>(null);
+  const [isFileManagerOpen, setIsFileManagerOpen] = useState<boolean>(false);
+  const [selectedFolderItem, setSelectedFolderItem] = useState<DownloadItem | null>(null);
 
   const handleGrantReward = (rewardType: string) => {
     setRewardPoints(prev => prev + 100);
@@ -209,11 +216,35 @@ export default function App() {
                 onRestart={handleRestart}
                 onDelete={handleDelete}
                 onConvertToFFmpeg={() => setActiveTab('ffmpeg')}
+                onPlayFile={(item) => setSelectedFileToPlay(item)}
+                onOpenFolderLocation={(item) => {
+                  setSelectedFolderItem(item);
+                  setIsFileManagerOpen(true);
+                }}
               />
             </div>
           )}
         </main>
       </div>
+
+      {/* File Player & Executer Modal */}
+      <FilePlayerModal 
+        item={selectedFileToPlay}
+        onClose={() => setSelectedFileToPlay(null)}
+        onOpenFolderLocation={(item) => {
+          setSelectedFolderItem(item);
+          setIsFileManagerOpen(true);
+        }}
+      />
+
+      {/* File Manager Folder Location Modal */}
+      <FileManagerModal
+        isOpen={isFileManagerOpen}
+        onClose={() => setIsFileManagerOpen(false)}
+        downloadItems={downloads}
+        selectedItem={selectedFolderItem}
+        defaultPath={settings.defaultPath}
+      />
 
       {/* Tapsell Rewarded Video Ad Modal */}
       <TapsellRewardModal

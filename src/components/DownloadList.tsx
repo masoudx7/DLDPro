@@ -15,7 +15,10 @@ import {
   Instagram, 
   Send, 
   Link2,
-  HardDrive
+  HardDrive,
+  FolderOpen,
+  ExternalLink,
+  Music
 } from 'lucide-react';
 
 interface DownloadListProps {
@@ -25,6 +28,8 @@ interface DownloadListProps {
   onRestart: (id: string) => void;
   onDelete: (id: string) => void;
   onConvertToFFmpeg: (item: DownloadItem) => void;
+  onPlayFile: (item: DownloadItem) => void;
+  onOpenFolderLocation: (item: DownloadItem) => void;
 }
 
 export const DownloadList: React.FC<DownloadListProps> = ({
@@ -33,7 +38,9 @@ export const DownloadList: React.FC<DownloadListProps> = ({
   onResume,
   onRestart,
   onDelete,
-  onConvertToFFmpeg
+  onConvertToFFmpeg,
+  onPlayFile,
+  onOpenFolderLocation
 }) => {
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 بایت';
@@ -63,7 +70,7 @@ export const DownloadList: React.FC<DownloadListProps> = ({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'video': return <Film className="w-5 h-5 text-rose-400" />;
-      case 'audio': return <Film className="w-5 h-5 text-purple-400" />;
+      case 'audio': return <Music className="w-5 h-5 text-purple-400" />;
       case 'archive': return <Archive className="w-5 h-5 text-amber-400" />;
       case 'software': return <FileCode className="w-5 h-5 text-emerald-400" />;
       default: return <FileText className="w-5 h-5 text-blue-400" />;
@@ -99,8 +106,14 @@ export const DownloadList: React.FC<DownloadListProps> = ({
           >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
               <div className="flex items-start gap-3 w-full sm:w-auto flex-1 min-w-0">
-                {/* Thumbnail or Category Icon */}
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-neutral-800 border border-neutral-700 overflow-hidden shrink-0 flex items-center justify-center">
+                {/* Thumbnail or Category Icon (Clickable if completed) */}
+                <div 
+                  onClick={() => isCompleted && onPlayFile(item)}
+                  className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-neutral-800 border border-neutral-700 overflow-hidden shrink-0 flex items-center justify-center ${
+                    isCompleted ? 'cursor-pointer hover:border-blue-500 hover:scale-105 transition-all' : ''
+                  }`}
+                  title={isCompleted ? 'اجرا / پخش فایل' : ''}
+                >
                   {item.thumbnail ? (
                     <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
@@ -109,12 +122,23 @@ export const DownloadList: React.FC<DownloadListProps> = ({
                   <div className="absolute top-1 left-1 bg-neutral-950/80 backdrop-blur-sm p-0.5 sm:p-1 rounded-md">
                     {getPlatformIcon(item.platform)}
                   </div>
+                  {isCompleted && (
+                    <div className="absolute inset-0 bg-neutral-950/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <ExternalLink className="w-5 h-5 text-blue-400" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Details & Progress */}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
-                    <h3 className="font-bold text-neutral-200 text-xs sm:text-sm truncate max-w-[200px] sm:max-w-md" title={item.title}>
+                    <h3 
+                      onClick={() => isCompleted && onPlayFile(item)}
+                      className={`font-bold text-neutral-200 text-xs sm:text-sm truncate max-w-[200px] sm:max-w-md ${
+                        isCompleted ? 'cursor-pointer hover:text-blue-400 transition-colors' : ''
+                      }`} 
+                      title={item.title}
+                    >
                       {item.title}
                     </h3>
                     <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
@@ -140,19 +164,19 @@ export const DownloadList: React.FC<DownloadListProps> = ({
                     {item.url}
                   </div>
 
-                  {/* Progress bar */}
-                  <div className="space-y-1">
+                  {/* Modernized Progress Bar */}
+                  <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono">
                       <span className="text-neutral-300">
                         {formatBytes(item.downloadedBytes)} از {formatBytes(item.fileSize)}
                       </span>
-                      <span className="text-blue-400 font-bold">{item.progress}%</span>
+                      <span className="text-cyan-400 font-extrabold">{item.progress}%</span>
                     </div>
-                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-neutral-900 border border-neutral-800/80 h-2 rounded-full overflow-hidden p-[1px]">
                       <div 
                         className={`h-full transition-all duration-300 rounded-full ${
-                          isCompleted ? 'bg-green-500' :
-                          isDownloading ? 'bg-blue-500' :
+                          isCompleted ? 'bg-gradient-to-r from-emerald-500 to-green-400 shadow-sm shadow-green-500/50' :
+                          isDownloading ? 'bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-500 animate-pulse shadow-sm shadow-cyan-500/50' :
                           isPaused ? 'bg-amber-500' : 'bg-purple-500'
                         }`}
                         style={{ width: `${item.progress}%` }}
@@ -160,11 +184,11 @@ export const DownloadList: React.FC<DownloadListProps> = ({
                     </div>
                   </div>
 
-                  {/* Speed & ETA stats */}
+                  {/* Speed, ETA & File Location */}
                   <div className="flex flex-wrap items-center gap-3 sm:gap-6 mt-2.5 text-[11px] sm:text-xs text-neutral-400 font-mono">
                     {isDownloading && (
                       <>
-                        <div>سرعت: <span className="text-blue-400 font-bold">{formatSpeed(item.speed)}</span></div>
+                        <div>سرعت: <span className="text-cyan-400 font-bold">{formatSpeed(item.speed)}</span></div>
                         <div>زمان: <span className="text-neutral-300">{item.eta}</span></div>
                       </>
                     )}
@@ -174,17 +198,41 @@ export const DownloadList: React.FC<DownloadListProps> = ({
                         <span>شروع: {item.scheduledTime}</span>
                       </div>
                     )}
-                    <div className="hidden sm:flex text-[11px] text-neutral-500 items-center gap-1">
-                      <HardDrive className="w-3.5 h-3.5" />
-                      <span className="truncate max-w-[160px]">{item.savePath}</span>
-                    </div>
+                    <button 
+                      onClick={() => onOpenFolderLocation(item)}
+                      className="text-[11px] text-neutral-400 hover:text-amber-300 flex items-center gap-1 transition-colors"
+                      title="هدایت به فایل‌منیجر"
+                    >
+                      <FolderOpen className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="truncate max-w-[180px]">{item.savePath}</span>
+                    </button>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-neutral-800/60 shrink-0">
-                {isDownloading ? (
+                {/* Clickable Play / Execute Button for Completed items */}
+                {isCompleted ? (
+                  <>
+                    <button
+                      onClick={() => onPlayFile(item)}
+                      title="اجرا / پخش فایل"
+                      className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-950/50 transition-all"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>اجرا</span>
+                    </button>
+
+                    <button
+                      onClick={() => onOpenFolderLocation(item)}
+                      title="نمایش در فایل‌منیجر"
+                      className="w-8 h-8 rounded-xl border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-amber-400 transition-colors"
+                    >
+                      <FolderOpen className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : isDownloading ? (
                   <button
                     onClick={() => onPause(item.id)}
                     title="توقف"
@@ -235,4 +283,5 @@ export const DownloadList: React.FC<DownloadListProps> = ({
     </div>
   );
 };
+
 

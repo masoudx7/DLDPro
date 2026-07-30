@@ -24,6 +24,16 @@ export const QuickDownloadBox: React.FC<QuickDownloadBoxProps> = ({
   const [loading, setLoading] = useState(false);
   const [pasted, setPasted] = useState(false);
 
+  const [selectedQuality, setSelectedQuality] = useState('1080p (MP4)');
+
+  const qualityPresets = [
+    { label: '🎬 1080p Full HD', value: '1080p (MP4)' },
+    { label: '🎬 720p HD', value: '720p (MP4)' },
+    { label: '🎬 480p SD', value: '480p (MP4)' },
+    { label: '🎵 320kbps MP3 (صوت)', value: 'فقط صوت (320k MP3)' },
+    { label: '🎵 128kbps MP3', value: 'فقط صوت (128k MP3)' },
+  ];
+
   const handlePaste = async () => {
     try {
       if (navigator.clipboard) {
@@ -45,10 +55,10 @@ export const QuickDownloadBox: React.FC<QuickDownloadBoxProps> = ({
 
     setLoading(true);
 
-    let category: DownloadCategory = 'video';
+    let category: DownloadCategory = selectedQuality.includes('MP3') ? 'audio' : 'video';
     let platform: 'youtube' | 'instagram' | 'telegram' | 'direct' = 'direct';
     let title = 'فایل دانلودی جدید';
-    let quality = '1080p (MP4)';
+    let quality = selectedQuality;
     let fileSize = 120 * 1024 * 1024;
     let thumbnail = '';
 
@@ -62,27 +72,21 @@ export const QuickDownloadBox: React.FC<QuickDownloadBoxProps> = ({
       if (data.success && data.data) {
         title = data.data.title || title;
         fileSize = data.data.fileSize || fileSize;
-        category = data.data.category || category;
+        category = selectedQuality.includes('MP3') ? 'audio' : (data.data.category || category);
         platform = data.data.platform || platform;
         thumbnail = data.data.thumbnail || thumbnail;
-        if (data.data.qualityOptions && data.data.qualityOptions.length > 0) {
-          quality = data.data.qualityOptions[0];
-        }
       }
     } catch (err) {
       // Fallback detection
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         platform = 'youtube';
-        title = 'ویدیو یوتیوب با کیفیت HD';
-        category = 'video';
+        title = 'ویدیو یوتیوب با کیفیت انتخاب شده';
       } else if (url.includes('instagram.com')) {
         platform = 'instagram';
         title = 'پست/ریلز اینستاگرام';
-        category = 'video';
       } else if (url.includes('t.me')) {
         platform = 'telegram';
         title = 'فایل تلگرامی';
-        category = 'archive';
       }
     } finally {
       setLoading(false);
@@ -180,6 +184,29 @@ export const QuickDownloadBox: React.FC<QuickDownloadBoxProps> = ({
                   </>
                 )}
               </button>
+            </div>
+
+            {/* Quality & Audio Format Selector Pills */}
+            <div className="pt-1">
+              <div className="flex items-center gap-2 mb-1.5 text-xs text-neutral-400">
+                <span>انتخاب کیفیت تصویر یا صدا:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {qualityPresets.map((q) => (
+                  <button
+                    type="button"
+                    key={q.value}
+                    onClick={() => setSelectedQuality(q.value)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+                      selectedQuality === q.value
+                        ? 'bg-blue-600 text-white border-blue-500 font-bold shadow-md shadow-blue-950/50'
+                        : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:border-neutral-700'
+                    }`}
+                  >
+                    {q.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </form>
 
