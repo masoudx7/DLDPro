@@ -4,10 +4,6 @@ import {
   Clipboard, 
   Sparkles, 
   Sliders, 
-  Youtube, 
-  Instagram, 
-  Send, 
-  Link2,
   Check,
   ArrowLeft
 } from 'lucide-react';
@@ -106,10 +102,6 @@ export const QuickDownloadBox: React.FC<QuickDownloadBoxProps> = ({
     setUrl('');
   };
 
-  const handlePresetSample = (sampleUrl: string) => {
-    setUrl(sampleUrl);
-  };
-
   return (
     <div className="relative mb-8" dir="rtl">
       {/* Outer Glow Card Wrapper */}
@@ -187,47 +179,6 @@ export const QuickDownloadBox: React.FC<QuickDownloadBoxProps> = ({
                     <ArrowLeft className="w-4 h-4 text-blue-200 hidden sm:inline" />
                   </>
                 )}
-              </button>
-            </div>
-
-            {/* Platform Quick Badges & Preset Shortcuts */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-neutral-800/80">
-              <span className="text-[11px] font-bold text-neutral-400 ml-1">نمونه‌های سریع:</span>
-              
-              <button
-                type="button"
-                onClick={() => handlePresetSample('https://www.youtube.com/watch?v=sample_video')}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-rose-950/40 border border-neutral-800 hover:border-rose-500/30 text-[11px] text-neutral-300 transition-all"
-              >
-                <Youtube className="w-3.5 h-3.5 text-rose-500" />
-                <span>یوتیوب (HD 1080p)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handlePresetSample('https://www.instagram.com/reel/sample_reel')}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-pink-950/40 border border-neutral-800 hover:border-pink-500/30 text-[11px] text-neutral-300 transition-all"
-              >
-                <Instagram className="w-3.5 h-3.5 text-pink-500" />
-                <span>اینستاگرام ریلز</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handlePresetSample('https://t.me/channel/source_code.zip')}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-sky-950/40 border border-neutral-800 hover:border-sky-500/30 text-[11px] text-neutral-300 transition-all"
-              >
-                <Send className="w-3.5 h-3.5 text-sky-400" />
-                <span>تلگرام</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handlePresetSample('https://cdn.example.com/files/software_pack_v2.0.zip')}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 hover:bg-blue-950/40 border border-neutral-800 hover:border-blue-500/30 text-[11px] text-neutral-300 transition-all"
-              >
-                <Link2 className="w-3.5 h-3.5 text-blue-400" />
-                <span>لینک مستقیم</span>
               </button>
             </div>
           </form>

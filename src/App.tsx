@@ -6,20 +6,23 @@ import { QuickDownloadBox } from './components/QuickDownloadBox';
 import { AddDownloadModal } from './components/AddDownloadModal';
 import { FFmpegStudio } from './components/FFmpegStudio';
 import { SettingsModal } from './components/SettingsModal';
-import { PurchaseModal } from './components/PurchaseModal';
-import { DownloadItem, AppSettings, DownloadCategory } from './types';
+import { ScheduleSpeedTab } from './components/ScheduleSpeedTab';
+import { TapsellRewardModal } from './components/TapsellRewardModal';
+import { SpeedChart } from './components/SpeedChart';
+import { DownloadItem, AppSettings } from './types';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState<boolean>(false);
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
+  const [isTapsellModalOpen, setIsTapsellModalOpen] = useState<boolean>(false);
+  const [rewardPoints, setRewardPoints] = useState<number>(250);
 
-  // YouTube monthly quota state (limit = 5 free downloads per month)
-  const [youtubeCount, setYoutubeCount] = useState<number>(3);
-  const [isPro, setIsPro] = useState<boolean>(false);
+  const handleGrantReward = (rewardType: string) => {
+    setRewardPoints(prev => prev + 100);
+  };
 
   const [settings, setSettings] = useState<AppSettings>({
     defaultPath: 'C:/Users/Masoud/Downloads/AriaDownloads',
@@ -84,16 +87,6 @@ export default function App() {
   };
 
   const handleAddDownload = (newItemData: Omit<DownloadItem, 'id' | 'downloadedBytes' | 'speed' | 'progress' | 'status' | 'eta' | 'createdAt'>) => {
-    if (newItemData.platform === 'youtube' && !isPro && youtubeCount >= 5) {
-      setIsAddModalOpen(false);
-      setIsPurchaseModalOpen(true);
-      return;
-    }
-
-    if (newItemData.platform === 'youtube' && !isPro) {
-      setYoutubeCount(prev => prev + 1);
-    }
-
     const newItem: DownloadItem = {
       ...newItemData,
       id: 'dl_' + Date.now(),
@@ -138,13 +131,15 @@ export default function App() {
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={(tab) => {
-          if (tab === 'settings') setIsSettingsOpen(true);
-          else setActiveTab(tab);
+          if (tab === 'settings') {
+            setIsSettingsOpen(true);
+          } else if (tab === 'tapsell_reward') {
+            setIsTapsellModalOpen(true);
+          } else {
+            setActiveTab(tab);
+          }
         }} 
         counts={counts}
-        youtubeCount={youtubeCount}
-        isPro={isPro}
-        onOpenPurchase={() => setIsPurchaseModalOpen(true)}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
       />
@@ -160,11 +155,18 @@ export default function App() {
           onResumeAll={handleResumeAll}
           selectedSavePath={settings.defaultPath}
           onOpenMobileMenu={() => setIsMobileOpen(true)}
+          onOpenTapsellModal={() => setIsTapsellModalOpen(true)}
+          rewardPoints={rewardPoints}
         />
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-24 md:pb-8">
           {activeTab === 'ffmpeg' ? (
             <FFmpegStudio completedDownloads={completedDownloadsList} />
+          ) : activeTab === 'schedule_settings' ? (
+            <ScheduleSpeedTab 
+              settings={settings}
+              onUpdateSettings={setSettings}
+            />
           ) : (
             <div className="max-w-5xl mx-auto space-y-6">
               {/* Prominent Eye-Catching Quick Download Box */}
@@ -192,6 +194,14 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Real-time Download Speed Chart for Active Downloads */}
+              {(activeTab === 'active' || activeTab === 'all') && (
+                <SpeedChart 
+                  currentSpeedBytes={globalSpeed} 
+                  activeCount={counts.active} 
+                />
+              )}
+
               <DownloadList 
                 items={filteredDownloads}
                 onPause={handlePause}
@@ -204,6 +214,14 @@ export default function App() {
           )}
         </main>
       </div>
+
+      {/* Tapsell Rewarded Video Ad Modal */}
+      <TapsellRewardModal
+        isOpen={isTapsellModalOpen}
+        onClose={() => setIsTapsellModalOpen(false)}
+        onGrantReward={handleGrantReward}
+        currentRewardPoints={rewardPoints}
+      />
 
       {/* Add Download Modal */}
       <AddDownloadModal 
@@ -219,18 +237,6 @@ export default function App() {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onUpdateSettings={setSettings}
-      />
-
-      {/* Purchase Modal (Bazaar & Myket IAP) */}
-      <PurchaseModal
-        isOpen={isPurchaseModalOpen}
-        onClose={() => setIsPurchaseModalOpen(false)}
-        onSuccessPurchase={() => {
-          setIsPro(true);
-          setYoutubeCount(0);
-        }}
-        usedCount={youtubeCount}
-        maxCount={5}
       />
     </div>
   );

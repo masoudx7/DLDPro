@@ -6,7 +6,8 @@ import {
   FolderOpen, 
   Play, 
   Pause,
-  Menu
+  Menu,
+  Tv
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -18,6 +19,8 @@ interface NavbarProps {
   onResumeAll: () => void;
   selectedSavePath: string;
   onOpenMobileMenu?: () => void;
+  onOpenTapsellModal?: () => void;
+  rewardPoints?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -28,7 +31,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onPauseAll,
   onResumeAll,
   selectedSavePath,
-  onOpenMobileMenu
+  onOpenMobileMenu,
+  onOpenTapsellModal,
+  rewardPoints = 0
 }) => {
   const formatSpeed = (bytesPerSec: number) => {
     if (bytesPerSec === 0) return '۰ کیلوبایت/ثانیه';
@@ -76,6 +81,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Left Side: Actions & Path */}
       <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+        {/* Tapsell Rewarded Video Button */}
+        {onOpenTapsellModal && (
+          <button
+            onClick={onOpenTapsellModal}
+            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs transition-all shadow-md"
+            title="تبلیغ ویدیویی تپسل و کسب پاداش"
+          >
+            <Tv className="w-4 h-4 text-amber-400 animate-pulse" />
+            <span className="hidden md:inline">تبلیغ و پاداش تپسل</span>
+            <span className="bg-amber-500 text-neutral-950 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold font-mono">{rewardPoints}</span>
+          </button>
+        )}
+
         {/* Path Badge */}
         <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-neutral-400">
           <FolderOpen className="w-3.5 h-3.5 text-blue-400" />
@@ -114,4 +132,5 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
+
 

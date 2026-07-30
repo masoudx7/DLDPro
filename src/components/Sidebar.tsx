@@ -7,9 +7,11 @@ import {
   Clock, 
   Film, 
   Settings, 
-  Menu,
+  Gauge,
   X,
-  Crown
+  SlidersHorizontal,
+  ChevronLeft,
+  Tv
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,9 +24,6 @@ interface SidebarProps {
     completed: number;
     scheduled: number;
   };
-  youtubeCount: number;
-  isPro: boolean;
-  onOpenPurchase: () => void;
   isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
 }
@@ -33,20 +32,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeTab, 
   setActiveTab, 
   counts, 
-  youtubeCount, 
-  isPro, 
-  onOpenPurchase,
   isMobileOpen = false,
   setIsMobileOpen
 }) => {
   const menuItems = [
-    { id: 'all', label: 'همه دانلودها', icon: Download, count: counts.all, color: 'text-blue-400', dotColor: 'bg-blue-400' },
-    { id: 'active', label: 'در حال دانلود', icon: PlayCircle, count: counts.active, color: 'text-orange-400', dotColor: 'bg-orange-400' },
-    { id: 'paused', label: 'متوقف شده', icon: PauseCircle, count: counts.paused, color: 'text-amber-400', dotColor: 'bg-amber-400' },
-    { id: 'completed', label: 'تکمیل شده', icon: CheckCircle2, count: counts.completed, color: 'text-green-400', dotColor: 'bg-green-400' },
-    { id: 'scheduled', label: 'زمان‌بندی شده', icon: Clock, count: counts.scheduled, color: 'text-purple-400', dotColor: 'bg-purple-400' },
-    { id: 'ffmpeg', label: 'استودیوی FFmpeg', icon: Film, count: null, color: 'text-rose-400', dotColor: 'bg-rose-400' },
-    { id: 'settings', label: 'تنظیمات و مسیرها', icon: Settings, count: null, color: 'text-neutral-400', dotColor: 'bg-neutral-500' },
+    { id: 'all', label: 'همه دانلودها', icon: Download, count: counts.all, dotColor: 'bg-blue-400' },
+    { id: 'active', label: 'در حال دانلود', icon: PlayCircle, count: counts.active, dotColor: 'bg-orange-400' },
+    { id: 'paused', label: 'متوقف شده', icon: PauseCircle, count: counts.paused, dotColor: 'bg-amber-400' },
+    { id: 'completed', label: 'تکمیل شده', icon: CheckCircle2, count: counts.completed, dotColor: 'bg-green-400' },
+    { id: 'scheduled', label: 'صف دانلود', icon: Clock, count: counts.scheduled, dotColor: 'bg-purple-400' },
+    { id: 'schedule_settings', label: 'زمان‌بندی و سرعت', icon: Gauge, count: null, dotColor: 'bg-indigo-400' },
+    { id: 'tapsell_reward', label: 'تبلیغ و پاداش تپسل', icon: Tv, count: null, dotColor: 'bg-amber-400' },
+    { id: 'ffmpeg', label: 'استودیوی FFmpeg', icon: Film, count: null, dotColor: 'bg-rose-400' },
+    { id: 'settings', label: 'تنظیمات و مسیرها', icon: Settings, count: null, dotColor: 'bg-neutral-500' },
   ];
 
   const handleTabClick = (id: string) => {
@@ -54,183 +52,155 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (setIsMobileOpen) setIsMobileOpen(false);
   };
 
-  const sidebarContent = (
-    <>
+  const sidebarInner = (
+    <div className="flex flex-col h-full justify-between" dir="rtl">
       {/* App Branding */}
-      <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-950/40 text-white font-black text-sm tracking-tighter">
-            un
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h1 className="font-bold text-neutral-100 text-base tracking-tight">DLD-Pro</h1>
-              <span className="text-[10px] bg-neutral-800 text-blue-400 font-mono px-1.5 py-0.5 rounded border border-neutral-700">undo</span>
+      <div>
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-neutral-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-950/40 text-white font-black text-base tracking-tighter shrink-0">
+              un
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-[11px] text-neutral-500">موتور فعال پیشرفته</span>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="font-bold text-neutral-100 text-base tracking-tight">DLD-Pro</h1>
+                <span className="text-[10px] bg-neutral-800 text-blue-400 font-mono px-1.5 py-0.5 rounded border border-neutral-700">undo</span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-[11px] text-neutral-400">موتور دانلود آماده به کار</span>
+              </div>
             </div>
           </div>
-        </div>
-        {setIsMobileOpen && (
-          <button 
-            onClick={() => setIsMobileOpen(false)} 
-            className="md:hidden p-2 text-neutral-400 hover:text-white rounded-lg"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex-1 space-y-2 overflow-y-auto">
-        <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest px-3 mb-2">کتابخانه</div>
-        {menuItems.map((item) => {
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleTabClick(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium ${
-                isActive
-                  ? 'bg-neutral-800 text-blue-400 border border-neutral-700 shadow-sm'
-                  : 'text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200'
-              }`}
+          {setIsMobileOpen && (
+            <button 
+              onClick={() => setIsMobileOpen(false)} 
+              className="md:hidden p-2 text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-xl transition-colors"
+              aria-label="بستن منو"
             >
-              <div className={`w-2 h-2 rounded-full ${item.dotColor}`}></div>
-              <span className="flex-1 text-right">{item.label}</span>
-              {item.count !== null && (
-                <span className="text-xs opacity-60 font-mono font-bold">
-                  {item.count}
-                </span>
-              )}
+              <X className="w-5 h-5" />
             </button>
-          );
-        })}
+          )}
+        </div>
+
+        {/* Navigation List */}
+        <div className="space-y-1.5">
+          <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest px-3 mb-2">منوی اصلی</div>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleTabClick(item.id)}
+                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl transition-all duration-200 text-xs sm:text-sm font-medium ${
+                  isActive
+                    ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 shadow-md shadow-blue-950/20 font-bold'
+                    : 'text-neutral-300 hover:bg-neutral-900/80 hover:text-white'
+                }`}
+              >
+                <div className={`w-2 h-2 rounded-full shrink-0 ${item.dotColor}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-400' : 'text-neutral-400'}`} />
+                <span className="flex-1 text-right truncate">{item.label}</span>
+                {item.count !== null && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-mono font-bold ${
+                    isActive ? 'bg-blue-500/20 text-blue-300' : 'bg-neutral-800 text-neutral-400'
+                  }`}>
+                    {item.count}
+                  </span>
+                )}
+                {isActive && <ChevronLeft className="w-3.5 h-3.5 text-blue-400" />}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* YouTube Quota & Pro Upgrade Card */}
-      <div className="p-3.5 bg-neutral-900/80 border border-neutral-800 rounded-2xl space-y-2.5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-neutral-400 font-medium">سهمیه یوتیوب (ماهانه)</span>
-          <span className="font-mono font-bold text-neutral-200">
-            {isPro ? 'نامحدود (PRO)' : `${youtubeCount}/5`}
-          </span>
+      {/* Scheduler Active Info Box */}
+      <div className="mt-6 pt-4 border-t border-neutral-800/80 space-y-3">
+        <div className="p-3.5 bg-neutral-900/60 border border-neutral-800 rounded-2xl space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+            <span className="text-xs font-bold text-neutral-200">زمان‌بندی شبانه (02:00 الی 07:00)</span>
+          </div>
+          <p className="text-[11px] text-neutral-400 leading-relaxed">
+            دانلودهای زمان‌بندی شده به‌صورت خودکار در این ساعات شروع می‌شوند.
+          </p>
         </div>
-        {!isPro && (
-          <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-            <div 
-              className={`h-full rounded-full transition-all ${youtubeCount >= 5 ? 'bg-red-500' : 'bg-blue-500'}`} 
-              style={{ width: `${Math.min(100, (youtubeCount / 5) * 100)}%` }}
-            ></div>
-          </div>
-        )}
-        {!isPro ? (
-          <button
-            onClick={() => {
-              onOpenPurchase();
-              if (setIsMobileOpen) setIsMobileOpen(false);
-            }}
-            className="w-full mt-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[11px] font-bold py-2 px-3 rounded-xl transition-all shadow-md shadow-blue-950/40 flex items-center justify-center gap-1.5"
-          >
-            <Crown className="w-3.5 h-3.5 text-amber-300" />
-            <span>خرید اشتراک (بازار / مایکت)</span>
-          </button>
-        ) : (
-          <div className="text-[11px] text-green-400 font-bold text-center bg-green-500/10 py-1.5 rounded-lg border border-green-500/20">
-            اشتراک طلایی فعال است ✨
-          </div>
-        )}
-      </div>
 
-      {/* Scheduler Info Footer */}
-      <div className="p-4 bg-neutral-900/50 border border-neutral-800 rounded-xl space-y-2">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-          <span className="text-xs font-bold text-neutral-200">زمان‌بندی فعال</span>
-        </div>
-        <p className="text-[11px] text-neutral-500">شروع خودکار: 02:00 بامداد</p>
-        <p className="text-[11px] text-neutral-500">توقف خودکار: 07:00 صبح</p>
-        <div className="pt-2 mt-2 border-t border-neutral-800/80 flex items-center justify-between text-[11px] text-neutral-500">
+        <div className="flex items-center justify-between px-1 text-[11px] text-neutral-500">
           <span>توسعه‌دهنده:</span>
           <span className="font-bold text-blue-400 font-mono">undo group</span>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 bg-[#0D0D0D] border-l border-neutral-800 p-6 flex-col gap-6 h-screen select-none shrink-0" dir="rtl">
-        {sidebarContent}
+      <aside className="hidden md:flex w-64 bg-[#0D0D0D] border-l border-neutral-800 p-5 flex-col h-screen select-none shrink-0" dir="rtl">
+        {sidebarInner}
       </aside>
 
-      {/* Mobile Sidebar Overlay Drawer */}
+      {/* Mobile Sidebar Full Screen Drawer / Slide-Over */}
       {isMobileOpen && (
         <div className="md:hidden fixed inset-0 z-50 overflow-hidden" dir="rtl">
+          {/* Backdrop Overlay */}
           <div 
-            className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-neutral-950/80 backdrop-blur-md transition-opacity"
             onClick={() => setIsMobileOpen && setIsMobileOpen(false)}
           />
-          <aside className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-[#0D0D0D] border-l border-neutral-800 p-5 flex flex-col gap-5 z-50 select-none overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200">
-            {sidebarContent}
-          </aside>
+
+          {/* Slideout Panel */}
+          <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-[#0D0D0D] border-l border-neutral-800 p-5 z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200 flex flex-col justify-between">
+            {sidebarInner}
+          </div>
         </div>
       )}
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0D0D0D]/95 backdrop-blur-md border-t border-neutral-800 flex items-center justify-around py-2 px-1 select-none" dir="rtl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0D0D0D]/95 backdrop-blur-lg border-t border-neutral-800/90 flex items-center justify-around py-2 px-1 select-none shadow-2xl" dir="rtl">
         <button
-          onClick={() => setActiveTab('all')}
-          className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-medium transition-all ${
+          onClick={() => handleTabClick('all')}
+          className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl text-[11px] font-medium transition-all ${
             activeTab === 'all' ? 'text-blue-400 bg-blue-500/10 font-bold' : 'text-neutral-400'
           }`}
         >
           <Download className="w-5 h-5" />
-          <span>همه</span>
+          <span>دانلودها</span>
         </button>
 
         <button
-          onClick={() => setActiveTab('active')}
-          className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-medium transition-all ${
-            activeTab === 'active' ? 'text-orange-400 bg-orange-500/10 font-bold' : 'text-neutral-400'
+          onClick={() => handleTabClick('schedule_settings')}
+          className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl text-[11px] font-medium transition-all ${
+            activeTab === 'schedule_settings' ? 'text-indigo-400 bg-indigo-500/10 font-bold' : 'text-neutral-400'
           }`}
         >
-          <PlayCircle className="w-5 h-5" />
-          <span>دانلود ({counts.active})</span>
+          <Gauge className="w-5 h-5" />
+          <span>زمان‌بندی</span>
         </button>
 
         <button
-          onClick={() => setActiveTab('completed')}
-          className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-medium transition-all ${
-            activeTab === 'completed' ? 'text-green-400 bg-green-500/10 font-bold' : 'text-neutral-400'
+          onClick={() => handleTabClick('ffmpeg')}
+          className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl text-[11px] font-medium transition-all ${
+            activeTab === 'ffmpeg' ? 'text-rose-400 bg-rose-500/10 font-bold' : 'text-neutral-400'
           }`}
         >
-          <CheckCircle2 className="w-5 h-5" />
-          <span>تکمیل</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('scheduled')}
-          className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-medium transition-all ${
-            activeTab === 'scheduled' ? 'text-purple-400 bg-purple-500/10 font-bold' : 'text-neutral-400'
-          }`}
-        >
-          <Clock className="w-5 h-5" />
-          <span>صف</span>
+          <Film className="w-5 h-5" />
+          <span>استودیو</span>
         </button>
 
         <button
           onClick={() => setIsMobileOpen && setIsMobileOpen(true)}
-          className="flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-medium text-neutral-400 hover:text-white transition-all"
+          className={`flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl text-[11px] font-medium transition-all ${
+            isMobileOpen ? 'text-white bg-neutral-800 font-bold' : 'text-neutral-400 hover:text-white'
+          }`}
         >
-          <Menu className="w-5 h-5" />
-          <span>منو</span>
+          <SlidersHorizontal className="w-5 h-5" />
+          <span>منوی کامل</span>
         </button>
       </nav>
     </>
   );
 };
-
