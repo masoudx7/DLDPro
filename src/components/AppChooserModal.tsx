@@ -14,9 +14,11 @@ import {
   Download, 
   Folder, 
   Settings,
-  Sparkles
+  Sparkles,
+  HardDrive
 } from 'lucide-react';
 import { DownloadItem } from '../types';
+import { downloadAndSaveToDisk } from '../lib/fileSaver';
 
 interface SystemApp {
   id: string;
@@ -77,20 +79,18 @@ export const AppChooserModal: React.FC<AppChooserModalProps> = ({
     return matchesCategory && matchesPlatform;
   });
 
-  const handleLaunchWithApp = (app: SystemApp) => {
+  const handleLaunchWithApp = async (app: SystemApp) => {
     setSelectedAppId(app.id);
     setLaunchedMessage(`در حال ارسال فایل "${item.title}" به برنامه ${app.name}...`);
 
-    // Trigger local browser download / file save intent
-    const link = document.createElement('a');
-    link.href = item.url;
-    link.download = `${item.title}.${item.category === 'video' ? 'mp4' : item.category === 'audio' ? 'mp3' : 'zip'}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const fileName = `${item.title}.${item.category === 'video' ? 'mp4' : item.category === 'audio' ? 'mp3' : 'zip'}`;
+    const mimeType = item.category === 'video' ? 'video/mp4' : item.category === 'audio' ? 'audio/mpeg' : 'application/zip';
+
+    // Save directly to disk storage using File System Access API / Blob
+    await downloadAndSaveToDisk(item.url, fileName, mimeType);
 
     setTimeout(() => {
-      setLaunchedMessage(`✅ فایل با موفقیت در نرم‌افزار ${app.name} فراخوانی شد.`);
+      setLaunchedMessage(`✅ فایل با موفقیت ذخیره و در نرم‌افزار ${app.name} فراخوانی شد.`);
       setTimeout(() => {
         setLaunchedMessage('');
         onClose();

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Settings, X } from 'lucide-react';
+import { Settings, X, FolderOpen } from 'lucide-react';
 import { AppSettings } from '../types';
+import { pickSystemDirectory } from '../lib/fileSaver';
 
 interface SettingsModalProps {
   settings: AppSettings;
@@ -18,6 +19,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [formData, setFormData] = useState<AppSettings>(settings);
 
   if (!isOpen) return null;
+
+  const handlePickDirectory = async () => {
+    const chosen = await pickSystemDirectory();
+    if (chosen) {
+      setFormData({ ...formData, defaultPath: chosen });
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +54,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <form onSubmit={handleSave} className="p-6 space-y-5">
           <div className="space-y-2">
             <label className="text-xs font-semibold text-neutral-300">مسیر پیش‌فرض ذخیره فایل‌ها:</label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 value={formData.defaultPath}
@@ -54,19 +62,30 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="w-full bg-neutral-900 text-neutral-200 text-sm rounded-xl px-4 py-3 border border-neutral-700 font-mono text-left"
                 dir="ltr"
               />
-              <button
-                type="button"
-                onClick={() => {
-                  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
-                  setFormData({ 
-                    ...formData, 
-                    defaultPath: isAndroid ? '/storage/emulated/0/Download/UndoDownloadManager' : 'C:/Users/Public/Downloads/UndoDownloadManager' 
-                  });
-                }}
-                className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-4 rounded-xl text-xs font-bold transition-all shrink-0"
-              >
-                پیش‌فرض
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handlePickDirectory}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-blue-950/40"
+                  title="انتخاب پوشه از حافظه دستگاه"
+                >
+                  <FolderOpen className="w-4 h-4" />
+                  <span>انتخاب پوشه</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+                    setFormData({ 
+                      ...formData, 
+                      defaultPath: isAndroid ? '/storage/emulated/0/Download/UndoDownloadManager' : 'C:/Users/Public/Downloads/UndoDownloadManager' 
+                    });
+                  }}
+                  className="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 px-3 py-3 rounded-xl text-xs font-bold transition-all"
+                >
+                  پیش‌فرض
+                </button>
+              </div>
             </div>
           </div>
 

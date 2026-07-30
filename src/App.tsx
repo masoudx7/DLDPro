@@ -14,6 +14,14 @@ import { FileManagerModal } from './components/FileManagerModal';
 import { AppChooserModal } from './components/AppChooserModal';
 import { DownloadItem, AppSettings } from './types';
 import { CheckCircle2, FolderCheck } from 'lucide-react';
+import { 
+  loadPersistentDownloads, 
+  savePersistentDownloads, 
+  loadPersistentSettings, 
+  savePersistentSettings, 
+  loadPersistentPoints, 
+  savePersistentPoints 
+} from './lib/storage';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('all');
@@ -34,7 +42,11 @@ export default function App() {
   const [selectedFolderItem, setSelectedFolderItem] = useState<DownloadItem | null>(null);
 
   const handleGrantReward = (rewardType: string) => {
-    setRewardPoints(prev => prev + 100);
+    setRewardPoints(prev => {
+      const updated = prev + 100;
+      savePersistentPoints(updated);
+      return updated;
+    });
   };
 
   // Auto-detect system download path on initial launch
@@ -53,6 +65,41 @@ export default function App() {
   });
 
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
+
+  // Load state from IndexedDB & LocalStorage on initial load
+  useEffect(() => {
+    let isMounted = true;
+
+    // Load persisted downloads
+    loadPersistentDownloads().then(storedDownloads => {
+      if (isMounted && storedDownloads) {
+        setDownloads(storedDownloads);
+      }
+    });
+
+    // Load persisted settings
+    const storedSettings = loadPersistentSettings(defaultOSPath);
+    setSettings(storedSettings);
+
+    // Load persisted reward points
+    const storedPoints = loadPersistentPoints();
+    setRewardPoints(storedPoints);
+
+    return () => { isMounted = false; };
+  }, []);
+
+  // Auto-Save Downloads to IndexedDB & LocalStorage on any change
+  useEffect(() => {
+    if (downloads && downloads.length > 0) {
+      savePersistentDownloads(downloads);
+    }
+  }, [downloads]);
+
+  // Auto-Save Settings on change
+  const handleUpdateSettings = (newSettings: AppSettings) => {
+    setSettings(newSettings);
+    savePersistentSettings(newSettings);
+  };
 
   // Simulate real-time progress for downloading items
   useEffect(() => {
@@ -205,7 +252,7 @@ export default function App() {
           ) : activeTab === 'schedule_settings' ? (
             <ScheduleSpeedTab 
               settings={settings}
-              onUpdateSettings={setSettings}
+              onUpdateSettings={handleUpdateSettings}
             />
           ) : (
             <div className="max-w-5xl mx-auto space-y-6">
@@ -309,7 +356,7 @@ export default function App() {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
-        onUpdateSettings={setSettings}
+        onUpdateSettings={handleUpdateSettings}
       />
     </div>
   );

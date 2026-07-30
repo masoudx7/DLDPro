@@ -20,6 +20,7 @@ import {
   ExternalLink,
   Music
 } from 'lucide-react';
+import { downloadAndSaveToDisk } from '../lib/fileSaver';
 
 interface DownloadListProps {
   items: DownloadItem[];
@@ -217,6 +218,18 @@ export const DownloadList: React.FC<DownloadListProps> = ({
                 {/* Clickable Play / Execute Button for Completed items */}
                 {isCompleted ? (
                   <>
+                    <button
+                      onClick={async () => {
+                        const ext = item.category === 'video' ? 'mp4' : item.category === 'audio' ? 'mp3' : 'zip';
+                        const fileName = `${item.title}.${ext}`;
+                        await downloadAndSaveToDisk(item.url, fileName);
+                      }}
+                      title="ذخیره مستقیم روی هارد و حافظه دستگاه"
+                      className="w-8 h-8 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 flex items-center justify-center transition-colors"
+                    >
+                      <HardDrive className="w-4 h-4" />
+                    </button>
+
                     <button
                       onClick={() => onOpenAppChooser(item)}
                       title="اجرا با انتخاب برنامه / پلیر"

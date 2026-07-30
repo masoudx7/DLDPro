@@ -16,9 +16,11 @@ import {
   Download,
   Share2,
   ExternalLink,
-  Info
+  Info,
+  HardDrive
 } from 'lucide-react';
 import { DownloadItem } from '../types';
+import { downloadAndSaveToDisk } from '../lib/fileSaver';
 
 interface FilePlayerModalProps {
   item: DownloadItem | null;
@@ -152,7 +154,20 @@ export const FilePlayerModal: React.FC<FilePlayerModalProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <button
+              onClick={async () => {
+                const fileName = `${item.title}.${isVideo ? 'mp4' : isAudio ? 'mp3' : 'zip'}`;
+                const mimeType = isVideo ? 'video/mp4' : isAudio ? 'audio/mpeg' : 'application/zip';
+                await downloadAndSaveToDisk(item.url, fileName, mimeType);
+              }}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/40 transition-all"
+              title="ذخیره فایل مستقیم در مسیر هارد یا کارت حافظه"
+            >
+              <HardDrive className="w-4 h-4" />
+              <span>ذخیره مستقیم در هارد</span>
+            </button>
+
             <button
               onClick={() => {
                 if (onOpenAppChooser && item) {
@@ -162,10 +177,10 @@ export const FilePlayerModal: React.FC<FilePlayerModalProps> = ({
                   handleLaunchFile();
                 }
               }}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-950/50 transition-all"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-blue-950/50 transition-all"
             >
               <ExternalLink className="w-4 h-4" />
-              <span>اجرا با برنامه/پلیر دلخواه (Open With)</span>
+              <span>اجرا با پلیر دلخواه</span>
             </button>
 
             <button
@@ -173,10 +188,10 @@ export const FilePlayerModal: React.FC<FilePlayerModalProps> = ({
                 onClose();
                 onOpenFolderLocation(item);
               }}
-              className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-bold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 border border-neutral-700 transition-all"
+              className="w-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-bold py-3 px-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 border border-neutral-700 transition-all"
             >
               <Folder className="w-4 h-4 text-amber-400" />
-              <span>نمایش در فایل‌منیجر سیستم</span>
+              <span>فایل‌منیجر سیستم</span>
             </button>
           </div>
 
