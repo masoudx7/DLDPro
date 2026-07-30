@@ -169,12 +169,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Mobile Sidebar Overlay Drawer */}
       {isMobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50 flex" dir="rtl">
+        <div className="md:hidden fixed inset-0 z-50 overflow-hidden" dir="rtl">
           <div 
-            className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm transition-opacity"
             onClick={() => setIsMobileOpen && setIsMobileOpen(false)}
           />
-          <aside className="relative w-72 max-w-[80vw] bg-[#0D0D0D] border-l border-neutral-800 p-5 flex flex-col gap-5 h-full z-10 select-none overflow-y-auto">
+          <aside className="fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-[#0D0D0D] border-l border-neutral-800 p-5 flex flex-col gap-5 z-50 select-none overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-200">
             {sidebarContent}
           </aside>
         </div>

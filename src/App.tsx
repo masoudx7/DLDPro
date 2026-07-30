@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Navbar } from './components/Navbar';
 import { DownloadList } from './components/DownloadList';
+import { QuickDownloadBox } from './components/QuickDownloadBox';
 import { AddDownloadModal } from './components/AddDownloadModal';
 import { FFmpegStudio } from './components/FFmpegStudio';
 import { SettingsModal } from './components/SettingsModal';
@@ -29,77 +30,7 @@ export default function App() {
     speedLimit: 0
   });
 
-  const [downloads, setDownloads] = useState<DownloadItem[]>([
-    {
-        id: 'dl_1',
-        title: 'آموزش جامع ری اکت ۱۸ و معماری مدرن (YouTube)',
-        url: 'https://www.youtube.com/watch?v=react18_tutorial',
-        fileSize: 480 * 1024 * 1024,
-        downloadedBytes: 192 * 1024 * 1024,
-        speed: 3.2 * 1024 * 1024,
-        progress: 40,
-        status: 'downloading',
-        category: 'video',
-        thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&auto=format&fit=crop&q=80',
-        quality: '1080p (MP4)',
-        savePath: 'C:/Users/Masoud/Downloads/AriaDownloads',
-        eta: '۰۱:۵۵',
-        createdAt: '14:20',
-        platform: 'youtube'
-    },
-    {
-        id: 'dl_2',
-        title: 'بسته گرافیکی و آیکون‌های وکتور اینستاگرام',
-        url: 'https://www.instagram.com/p/reel_sample_pack',
-        fileSize: 125 * 1024 * 1024,
-        downloadedBytes: 125 * 1024 * 1024,
-        speed: 0,
-        progress: 100,
-        status: 'completed',
-        category: 'archive',
-        thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80',
-        quality: 'Original',
-        savePath: 'C:/Users/Masoud/Downloads/AriaDownloads',
-        eta: 'اتمام یافته',
-        createdAt: '13:05',
-        platform: 'instagram'
-    },
-    {
-        id: 'dl_3',
-        title: 'پروژه سورس‌کد ربات تلگرام پیشرفته Node.js',
-        url: 'https://t.me/developer_channel/zip_source',
-        fileSize: 45 * 1024 * 1024,
-        downloadedBytes: 15 * 1024 * 1024,
-        speed: 1.1 * 1024 * 1024,
-        progress: 33,
-        status: 'paused',
-        category: 'software',
-        thumbnail: '',
-        quality: 'ZIP',
-        savePath: 'C:/Users/Masoud/Downloads/AriaDownloads',
-        eta: '--:--',
-        createdAt: '14:10',
-        platform: 'telegram'
-    },
-    {
-        id: 'dl_4',
-        title: 'مستند سینمایی طبیعت و کهکشان‌ها (زمان‌بندی شده)',
-        url: 'https://example.com/videos/galaxy_documentary_4k.mp4',
-        fileSize: 1850 * 1024 * 1024,
-        downloadedBytes: 0,
-        speed: 0,
-        progress: 0,
-        status: 'scheduled',
-        category: 'video',
-        thumbnail: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=600&auto=format&fit=crop&q=80',
-        quality: '1080p (MP4)',
-        savePath: 'C:/Users/Masoud/Downloads/AriaDownloads',
-        eta: 'شروع در ۰۲:۰۰ بامداد',
-        createdAt: '14:30',
-        platform: 'direct',
-        scheduledTime: '02:00'
-    }
-  ]);
+  const [downloads, setDownloads] = useState<DownloadItem[]>([]);
 
   // Simulate real-time progress for downloading items
   useEffect(() => {
@@ -228,26 +159,35 @@ export default function App() {
           onPauseAll={handlePauseAll}
           onResumeAll={handleResumeAll}
           selectedSavePath={settings.defaultPath}
+          onOpenMobileMenu={() => setIsMobileOpen(true)}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-20 md:pb-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-24 md:pb-8">
           {activeTab === 'ffmpeg' ? (
             <FFmpegStudio completedDownloads={completedDownloadsList} />
           ) : (
-            <div className="max-w-6xl mx-auto space-y-6">
-              {/* Tab Title */}
-              <div className="flex items-center justify-between" dir="rtl">
+            <div className="max-w-5xl mx-auto space-y-6">
+              {/* Prominent Eye-Catching Quick Download Box */}
+              <QuickDownloadBox 
+                onAddDownload={handleAddDownload}
+                onOpenAdvancedModal={() => setIsAddModalOpen(true)}
+                defaultPath={settings.defaultPath}
+              />
+
+              {/* Tab Title & Header */}
+              <div className="flex items-center justify-between pb-2 border-b border-neutral-800/80" dir="rtl">
                 <div>
-                  <h2 className="text-lg font-bold text-neutral-100">
-                    {activeTab === 'all' && 'همه دانلودها'}
-                    {activeTab === 'active' && 'دانلودهای در حال انجام'}
-                    {activeTab === 'paused' && 'دانلودهای متوقف شده'}
-                    {activeTab === 'completed' && 'فایل‌های دانلود شده'}
-                    {activeTab === 'scheduled' && 'صف زمان‌بندی شده خودکار'}
-                  </h2>
-                  <p className="text-xs text-neutral-400 mt-0.5">مدیریت فایل‌ها، زمان‌بندی هوشمند و سرعت انتقال</p>
+                  <h3 className="text-base sm:text-lg font-bold text-neutral-100 flex items-center gap-2">
+                    <span>
+                      {activeTab === 'all' && 'لیست همه دانلودها'}
+                      {activeTab === 'active' && 'دانلودهای در حال انجام'}
+                      {activeTab === 'paused' && 'دانلودهای متوقف شده'}
+                      {activeTab === 'completed' && 'فایل‌های دانلود شده'}
+                      {activeTab === 'scheduled' && 'صف زمان‌بندی شده خودکار'}
+                    </span>
+                  </h3>
                 </div>
-                <div className="text-xs font-mono text-neutral-400 bg-neutral-900 px-3 py-1.5 rounded-xl border border-neutral-800">
+                <div className="text-xs font-mono text-neutral-400 bg-neutral-900 px-3 py-1 rounded-xl border border-neutral-800">
                   تعداد: {filteredDownloads.length} فایل
                 </div>
               </div>

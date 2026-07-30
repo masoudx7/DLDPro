@@ -5,7 +5,8 @@ import {
   Zap, 
   FolderOpen, 
   Play, 
-  Pause
+  Pause,
+  Menu
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -16,6 +17,7 @@ interface NavbarProps {
   onPauseAll: () => void;
   onResumeAll: () => void;
   selectedSavePath: string;
+  onOpenMobileMenu?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -25,7 +27,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   globalSpeed,
   onPauseAll,
   onResumeAll,
-  selectedSavePath
+  selectedSavePath,
+  onOpenMobileMenu
 }) => {
   const formatSpeed = (bytesPerSec: number) => {
     if (bytesPerSec === 0) return '۰ کیلوبایت/ثانیه';
@@ -37,8 +40,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="min-h-[64px] md:h-20 bg-[#0F0F0F] border-b border-neutral-800 px-3 sm:px-6 md:px-8 py-2 flex items-center justify-between gap-2 z-20 sticky top-0" dir="rtl">
-      {/* Right Side: Search & Stats */}
+      {/* Right Side: Mobile Menu Button & Search */}
       <div className="flex items-center gap-2 sm:gap-4 flex-1 max-w-2xl min-w-0">
+        {onOpenMobileMenu && (
+          <button
+            onClick={onOpenMobileMenu}
+            className="md:hidden p-2 bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-xl text-neutral-300 hover:text-white shrink-0 transition-colors"
+            title="منوی اصلی"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
         <div className="relative flex-1 min-w-0">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
           <input

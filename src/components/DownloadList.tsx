@@ -72,13 +72,13 @@ export const DownloadList: React.FC<DownloadListProps> = ({
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4" dir="rtl">
-        <div className="w-20 h-20 rounded-3xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-600 mb-4 shadow-xl">
-          <Download className="w-10 h-10 animate-pulse text-blue-500/50" />
+      <div className="flex flex-col items-center justify-center py-12 text-center px-4 bg-neutral-900/30 border border-neutral-800/80 rounded-3xl" dir="rtl">
+        <div className="w-14 h-14 rounded-2xl bg-neutral-800/80 border border-neutral-700 flex items-center justify-center text-blue-400 mb-3 shadow-inner">
+          <Download className="w-7 h-7 text-blue-400" />
         </div>
-        <h3 className="text-lg font-bold text-neutral-300 mb-1">هیچ دانلودی در این بخش وجود ندارد</h3>
-        <p className="text-sm text-neutral-500 max-w-sm">
-          می‌توانید با زدن دکمه «افزودن دانلود» لینک مستقیم، یوتیوب، اینستاگرام یا تلگرام را وارد کنید.
+        <h3 className="text-base font-bold text-neutral-300 mb-1">لیست دانلود خالی است</h3>
+        <p className="text-xs text-neutral-400 max-w-sm">
+          لینک دانلود مورد نظر را در کادر بالای صفحه جای‌گذاری کرده و روی «شروع دانلود» کلیک کنید.
         </p>
       </div>
     );
