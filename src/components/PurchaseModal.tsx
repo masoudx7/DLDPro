@@ -41,8 +41,8 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-neutral-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4" dir="rtl">
-      <div className="bg-[#121212] border border-neutral-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 bg-neutral-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4" dir="rtl">
+      <div className="bg-[#121212] border border-neutral-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="px-6 py-5 border-b border-neutral-800 flex items-center justify-between bg-neutral-900/40">
           <div className="flex items-center gap-3">
@@ -130,7 +130,7 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
               {/* Payment Gateways: Myket & Cafe Bazaar */}
               <div className="space-y-3">
                 <div className="text-xs font-bold text-neutral-300 uppercase tracking-wider">انتخاب درگاه پرداخت درون‌برنامه‌ای:</div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Myket */}
                   <button
                     disabled={loading}

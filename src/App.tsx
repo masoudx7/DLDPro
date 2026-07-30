@@ -14,6 +14,7 @@ export default function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState<boolean>(false);
+  const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
 
   // YouTube monthly quota state (limit = 5 free downloads per month)
   const [youtubeCount, setYoutubeCount] = useState<number>(3);
@@ -201,7 +202,7 @@ export default function App() {
   const completedDownloadsList = downloads.filter(d => d.status === 'completed');
 
   return (
-    <div className="flex h-screen bg-[#0A0A0A] text-neutral-100 font-sans overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[#0A0A0A] text-neutral-100 font-sans overflow-hidden">
       {/* Sidebar */}
       <Sidebar 
         activeTab={activeTab} 
@@ -213,6 +214,8 @@ export default function App() {
         youtubeCount={youtubeCount}
         isPro={isPro}
         onOpenPurchase={() => setIsPurchaseModalOpen(true)}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
       />
 
       {/* Main Content Area */}
@@ -227,7 +230,7 @@ export default function App() {
           selectedSavePath={settings.defaultPath}
         />
 
-        <main className="flex-1 overflow-y-auto p-8">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-20 md:pb-8">
           {activeTab === 'ffmpeg' ? (
             <FFmpegStudio completedDownloads={completedDownloadsList} />
           ) : (

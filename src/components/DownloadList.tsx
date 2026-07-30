@@ -95,93 +95,95 @@ export const DownloadList: React.FC<DownloadListProps> = ({
         return (
           <div 
             key={item.id}
-            className="p-5 bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 rounded-2xl transition-all duration-200 shadow-lg group"
+            className="p-3.5 sm:p-5 bg-neutral-900/40 border border-neutral-800 hover:border-neutral-700 rounded-2xl transition-all duration-200 shadow-lg group"
           >
-            <div className="flex items-start justify-between gap-4">
-              {/* Thumbnail or Category Icon */}
-              <div className="relative w-14 h-14 rounded-xl bg-neutral-800 border border-neutral-700 overflow-hidden shrink-0 flex items-center justify-center">
-                {item.thumbnail ? (
-                  <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
-                ) : (
-                  getCategoryIcon(item.category)
-                )}
-                <div className="absolute top-1 left-1 bg-neutral-950/80 backdrop-blur-sm p-1 rounded-md">
-                  {getPlatformIcon(item.platform)}
-                </div>
-              </div>
-
-              {/* Details & Progress */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-neutral-200 text-sm truncate" title={item.title}>
-                    {item.title}
-                  </h3>
-                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                    isCompleted ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                    isDownloading ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
-                    isPaused ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                    isScheduled ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-                    'bg-neutral-800 text-neutral-400'
-                  }`}>
-                    {isCompleted ? 'تکمیل شده' : 
-                     isDownloading ? 'در حال دانلود' : 
-                     isPaused ? 'متوقف شده' : 
-                     isScheduled ? 'زمان‌بندی شده' : 'خطا'}
-                  </span>
-                  {item.quality && (
-                    <span className="text-[10px] bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded-md font-mono">
-                      {item.quality}
-                    </span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-start gap-3 w-full sm:w-auto flex-1 min-w-0">
+                {/* Thumbnail or Category Icon */}
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-neutral-800 border border-neutral-700 overflow-hidden shrink-0 flex items-center justify-center">
+                  {item.thumbnail ? (
+                    <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+                  ) : (
+                    getCategoryIcon(item.category)
                   )}
-                </div>
-
-                <div className="text-xs text-neutral-400 truncate mb-3 font-mono" dir="ltr">
-                  {item.url}
-                </div>
-
-                {/* Progress bar */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="text-neutral-300">
-                      {formatBytes(item.downloadedBytes)} از {formatBytes(item.fileSize)}
-                    </span>
-                    <span className="text-blue-400 font-bold">{item.progress}%</span>
-                  </div>
-                  <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full transition-all duration-300 rounded-full ${
-                        isCompleted ? 'bg-green-500' :
-                        isDownloading ? 'bg-blue-500' :
-                        isPaused ? 'bg-amber-500' : 'bg-purple-500'
-                      }`}
-                      style={{ width: `${item.progress}%` }}
-                    ></div>
+                  <div className="absolute top-1 left-1 bg-neutral-950/80 backdrop-blur-sm p-0.5 sm:p-1 rounded-md">
+                    {getPlatformIcon(item.platform)}
                   </div>
                 </div>
 
-                {/* Speed & ETA stats */}
-                <div className="flex items-center gap-6 mt-3 text-xs text-neutral-400 font-mono">
-                  {isDownloading && (
-                    <>
-                      <div>سرعت: <span className="text-blue-400 font-bold">{formatSpeed(item.speed)}</span></div>
-                      <div>زمان باقی‌مانده: <span className="text-neutral-300">{item.eta}</span></div>
-                    </>
-                  )}
-                  {isScheduled && item.scheduledTime && (
-                    <div className="flex items-center gap-1.5 text-purple-400">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>شروع خودکار در: {item.scheduledTime}</span>
+                {/* Details & Progress */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                    <h3 className="font-bold text-neutral-200 text-xs sm:text-sm truncate max-w-[200px] sm:max-w-md" title={item.title}>
+                      {item.title}
+                    </h3>
+                    <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
+                      isCompleted ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+                      isDownloading ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
+                      isPaused ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                      isScheduled ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                      'bg-neutral-800 text-neutral-400'
+                    }`}>
+                      {isCompleted ? 'تکمیل شده' : 
+                       isDownloading ? 'در حال دانلود' : 
+                       isPaused ? 'متوقف شده' : 
+                       isScheduled ? 'زمان‌بندی شده' : 'خطا'}
+                    </span>
+                    {item.quality && (
+                      <span className="text-[9px] sm:text-[10px] bg-neutral-800 text-neutral-300 px-1.5 py-0.5 rounded font-mono shrink-0">
+                        {item.quality}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-[11px] sm:text-xs text-neutral-400 truncate mb-2 sm:mb-3 font-mono" dir="ltr">
+                    {item.url}
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[11px] sm:text-xs font-mono">
+                      <span className="text-neutral-300">
+                        {formatBytes(item.downloadedBytes)} از {formatBytes(item.fileSize)}
+                      </span>
+                      <span className="text-blue-400 font-bold">{item.progress}%</span>
                     </div>
-                  )}
-                  <div className="text-[11px] text-neutral-500 flex items-center gap-1">
-                    <HardDrive className="w-3.5 h-3.5" />
-                    <span className="truncate max-w-[200px]">{item.savePath}</span>
+                    <div className="w-full bg-neutral-800 h-1.5 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-300 rounded-full ${
+                          isCompleted ? 'bg-green-500' :
+                          isDownloading ? 'bg-blue-500' :
+                          isPaused ? 'bg-amber-500' : 'bg-purple-500'
+                        }`}
+                        style={{ width: `${item.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* Speed & ETA stats */}
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-6 mt-2.5 text-[11px] sm:text-xs text-neutral-400 font-mono">
+                    {isDownloading && (
+                      <>
+                        <div>سرعت: <span className="text-blue-400 font-bold">{formatSpeed(item.speed)}</span></div>
+                        <div>زمان: <span className="text-neutral-300">{item.eta}</span></div>
+                      </>
+                    )}
+                    {isScheduled && item.scheduledTime && (
+                      <div className="flex items-center gap-1 text-purple-400">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>شروع: {item.scheduledTime}</span>
+                      </div>
+                    )}
+                    <div className="hidden sm:flex text-[11px] text-neutral-500 items-center gap-1">
+                      <HardDrive className="w-3.5 h-3.5" />
+                      <span className="truncate max-w-[160px]">{item.savePath}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-2 self-center">
+              <div className="flex items-center justify-end gap-2 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-neutral-800/60 shrink-0">
                 {isDownloading ? (
                   <button
                     onClick={() => onPause(item.id)}

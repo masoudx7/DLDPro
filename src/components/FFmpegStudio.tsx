@@ -57,7 +57,7 @@ export const FFmpegStudio: React.FC<FFmpegStudioProps> = ({ completedDownloads }
         </div>
 
         {/* Operation Selector */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-neutral-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-neutral-800">
           <button
             onClick={() => { setOperation('convert'); setTargetFormat('mp4'); }}
             className={`p-4 rounded-2xl border text-right transition-all flex flex-col gap-2 ${

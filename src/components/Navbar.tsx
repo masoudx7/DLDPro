@@ -36,22 +36,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="h-20 bg-[#0F0F0F] border-b border-neutral-800 px-8 flex items-center justify-between z-10 sticky top-0" dir="rtl">
+    <header className="min-h-[64px] md:h-20 bg-[#0F0F0F] border-b border-neutral-800 px-3 sm:px-6 md:px-8 py-2 flex items-center justify-between gap-2 z-20 sticky top-0" dir="rtl">
       {/* Right Side: Search & Stats */}
-      <div className="flex items-center gap-6 flex-1 max-w-2xl">
-        <div className="relative flex-1">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+      <div className="flex items-center gap-2 sm:gap-4 flex-1 max-w-2xl min-w-0">
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
           <input
             type="text"
-            placeholder="جستجو لینک یا فایل (YouTube, Instagram, Telegram...)"
+            placeholder="جستجوی لینک یا فایل..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-700 text-neutral-200 placeholder-neutral-500 text-sm rounded-full py-2.5 pr-11 pl-5 focus:outline-none focus:border-blue-500 transition-colors"
+            className="w-full bg-neutral-900 border border-neutral-700 text-neutral-200 placeholder-neutral-500 text-xs sm:text-sm rounded-full py-2 pr-9 pl-3 focus:outline-none focus:border-blue-500 transition-colors"
           />
         </div>
 
         {/* Live Global Speed Badge */}
-        <div className="hidden lg:flex items-center gap-3 bg-neutral-900 px-4 py-2 rounded-xl border border-neutral-800">
+        <div className="hidden lg:flex items-center gap-3 bg-neutral-900 px-3 py-1.5 rounded-xl border border-neutral-800 shrink-0">
           <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
             <Zap className="w-3.5 h-3.5 animate-pulse" />
           </div>
@@ -63,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Left Side: Actions & Path */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Path Badge */}
         <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-neutral-400">
           <FolderOpen className="w-3.5 h-3.5 text-blue-400" />
@@ -75,27 +75,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onResumeAll}
             title="ادامه همه"
-            className="p-2 hover:bg-neutral-800 rounded-lg text-green-400 transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-neutral-800 rounded-lg text-green-400 transition-colors"
           >
-            <Play className="w-4 h-4" />
+            <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <div className="w-[1px] h-4 bg-neutral-800 my-auto"></div>
           <button
             onClick={onPauseAll}
             title="توقف همه"
-            className="p-2 hover:bg-neutral-800 rounded-lg text-amber-400 transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-neutral-800 rounded-lg text-amber-400 transition-colors"
           >
-            <Pause className="w-4 h-4" />
+            <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
         {/* Add Download Button */}
         <button
           onClick={onOpenAddModal}
-          className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-lg shadow-blue-950/50 flex items-center gap-2"
+          className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all shadow-lg shadow-blue-950/50 flex items-center gap-1.5 shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>افزودن دانلود</span>
+          <span className="hidden sm:inline">افزودن دانلود</span>
+          <span className="sm:hidden">افزودن</span>
         </button>
       </div>
     </header>

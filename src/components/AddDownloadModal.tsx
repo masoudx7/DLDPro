@@ -96,8 +96,8 @@ export const AddDownloadModal: React.FC<AddDownloadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" dir="rtl">
-      <div className="bg-[#0F0F0F] border border-neutral-800 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4" dir="rtl">
+      <div className="bg-[#0F0F0F] border border-neutral-800 w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="px-6 py-5 border-b border-neutral-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export const AddDownloadModal: React.FC<AddDownloadModalProps> = ({
           )}
 
           {/* Category & Save Path */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-xs font-semibold text-neutral-300">دسته‌بندی خودکار</label>
               <select
