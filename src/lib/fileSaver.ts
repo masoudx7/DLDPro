@@ -1,118 +1,133 @@
-// Direct Local File Saver utility using File System Access API and Blob downloading
+// Direct Local File Saver utility using HTML5 Download triggers, Blob links, and System Access
 
 /**
  * Downloads and saves a file directly to the user's disk/storage.
- * Leverages `window.showSaveFilePicker` when available so the user can choose the exact directory/file name on Windows or Android.
- * Falls back to standard HTML5 Blob trigger for max compatibility.
+ * Leverages native Blob links & direct download triggers for maximum browser & OS compatibility.
  */
 export async function downloadAndSaveToDisk(
   fileUrl: string, 
   fileName: string, 
-  mimeType?: string,
-  onProgress?: (downloaded: number, total: number) => void
+  mimeType?: string
 ): Promise<{ success: boolean; filePath?: string; error?: string }> {
   try {
-    // 1. Check if modern File System Access API is supported (Chrome, Edge, Opera, etc.)
-    const hasSavePicker = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
-
-    if (hasSavePicker) {
+    // 1. Attempt File System Access API if supported and in non-sandboxed context
+    if (typeof window !== 'undefined' && 'showSaveFilePicker' in window) {
       try {
-        // Suggest file name & extension
         const ext = fileName.split('.').pop() || 'file';
         const fileHandle = await (window as any).showSaveFilePicker({
           suggestedName: fileName,
           types: [{
-            description: 'فایل دانلودی (Saved File)',
+            description: 'فایل دانلودی (Undo DM File)',
             accept: {
               [mimeType || 'application/octet-stream']: [`.${ext}`]
             }
           }]
         });
 
-        // Fetch file content
+        // Try CORS fetch
         const response = await fetch(fileUrl, { mode: 'cors' });
-        if (!response.ok) {
-          throw new Error(`HTTP Error ${response.status}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const writable = await fileHandle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          return { success: true, filePath: fileHandle.name };
         }
-
-        const reader = response.body?.getReader();
-        const contentLength = +(response.headers.get('Content-Length') || 0);
-        let receivedLength = 0;
-        const chunks: Uint8Array[] = [];
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            if (value) {
-              chunks.push(value);
-              receivedLength += value.length;
-              if (onProgress && contentLength) {
-                onProgress(receivedLength, contentLength);
-              }
-            }
-          }
-        }
-
-        const blob = new Blob(chunks, { type: mimeType || 'application/octet-stream' });
-        const writable = await fileHandle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-
-        return { success: true, filePath: fileHandle.name };
       } catch (pickerErr: any) {
-        // User cancelled picker or permission denied
         if (pickerErr.name === 'AbortError') {
           return { success: false, error: 'انصراف کاربر از انتخاب پوشه' };
         }
-        console.warn('showSaveFilePicker fallback to blob trigger:', pickerErr);
+        console.warn('showSaveFilePicker fallback:', pickerErr);
       }
     }
 
-    // 2. Fallback: Blob Fetch + Standard A Element Trigger
-    const response = await fetch(fileUrl, { mode: 'cors' });
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
+    // 2. Fetch via Blob & trigger direct download link
+    try {
+      const response = await fetch(fileUrl, { mode: 'cors' });
+      if (response.ok) {
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 15000);
+        return { success: true, filePath: fileName };
+      }
+    } catch (e) {
+      console.warn('Fetch blob failed, fallback to direct download anchor', e);
+    }
 
-    return { success: true, filePath: fileName };
-
-  } catch (err: any) {
-    console.error('File saving failed:', err);
-    // Direct link fallback trigger
+    // 3. Native Direct HTML5 Anchor Download Trigger (Bypasses CORS restrictions)
     const link = document.createElement('a');
     link.href = fileUrl;
     link.download = fileName;
     link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     return { success: true, filePath: fileName };
+
+  } catch (err: any) {
+    console.error('File saving failed:', err);
+    return { success: false, error: err.message || 'خطا در ذخیره فایل' };
   }
 }
 
 /**
- * Prompts user to choose a directory on system storage using Directory Picker API.
+ * Triggers native OS File Manager dialog (Android Files App / Windows Explorer File Picker)
+ * allowing the user to select local files from their phone/computer storage.
+ */
+export function openSystemFileManagerPicker(onFilesSelected?: (files: FileList) => void): void {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.multiple = true;
+  input.style.display = 'none';
+  
+  input.onchange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      if (onFilesSelected) {
+        onFilesSelected(target.files);
+      }
+    }
+  };
+
+  document.body.appendChild(input);
+  input.click();
+  setTimeout(() => {
+    if (document.body.contains(input)) {
+      document.body.removeChild(input);
+    }
+  }, 60000);
+}
+
+/**
+ * Prompts user to choose a directory on system storage using Directory Picker API or Native input.
  */
 export async function pickSystemDirectory(): Promise<string | null> {
   if (typeof window !== 'undefined' && 'showDirectoryPicker' in window) {
     try {
       const dirHandle = await (window as any).showDirectoryPicker();
-      return dirHandle.name ? `[پوشه انتخابی سیستم]: /${dirHandle.name}` : null;
+      return dirHandle.name ? `/storage/emulated/0/Download/${dirHandle.name}` : null;
     } catch (err: any) {
       if (err.name !== 'AbortError') {
         console.warn('Directory picker error:', err);
       }
     }
   }
-  return null;
+  
+  // Fallback directory path helper
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent);
+  return isAndroid 
+    ? '/storage/emulated/0/Download/UndoDownloadManager' 
+    : 'C:/Users/Public/Downloads/UndoDownloadManager';
 }

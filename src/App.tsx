@@ -333,6 +333,9 @@ export default function App() {
         downloadItems={downloads}
         selectedItem={selectedFolderItem}
         defaultPath={settings.defaultPath}
+        onImportLocalFiles={(importedFiles) => {
+          setDownloads(prev => [...importedFiles, ...prev]);
+        }}
       />
 
       {/* Tapsell Rewarded Video Ad Modal */}
